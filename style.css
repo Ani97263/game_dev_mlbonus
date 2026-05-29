@@ -15,17 +15,15 @@ body {
     align-items: center;
     height: 100vh;
     width: 100vw;
-    padding: 20px; /* Gives a safe margin around the edges */
+    padding: 20px;
 }
 
 #game-container {
     position: relative;
-    /* This makes it scale fluidly up to its original max dimensions */
     width: 100%;
     max-width: 1280px;
     max-height: 720px;
-    /* Enforces a perfect widescreen aspect ratio regardless of screen size */
-    aspect-ratio: 16 / 9; 
+    aspect-ratio: 16 / 9;
     box-shadow: 0 0 30px rgba(0, 255, 204, 0.2);
     border: 2px solid #00ffcc;
     background-color: #020205;
@@ -53,13 +51,12 @@ canvas {
     padding: 6px 12px;
     border: 1px solid #00ffcc;
     font-weight: bold;
-    font-size: 1.2vw; /* Dynamically sizes font based on the viewport width */
-    min-font-size: 12px;
+    font-size: 1.2vw;
     text-shadow: 0 0 5px #00ffcc;
     letter-spacing: 1px;
 }
 
-/* Screen Overlays (Start, Win, Game Over) */
+/* Screen Overlays & End-Game Menu Elements */
 #screen-overlay {
     position: absolute;
     top: 0;
@@ -73,6 +70,8 @@ canvas {
     align-items: center;
     z-index: 10;
     transition: opacity 0.3s ease;
+    padding: 20px;
+    text-align: center;
 }
 
 #screen-overlay.hidden {
@@ -81,7 +80,7 @@ canvas {
 }
 
 #overlay-title {
-    font-size: 4vw; /* Scales header text to fit smaller display limits */
+    font-size: 4vw;
     color: #ff0055;
     text-shadow: 0 0 15px #ff0055;
     margin-bottom: 10px;
@@ -92,16 +91,43 @@ canvas {
 #overlay-sub {
     font-size: 1.2vw;
     color: #8899a6;
+    margin-bottom: 20px;
+    max-width: 80%;
+}
+
+#stats-panel {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px dashed #00ffcc;
+    padding: 20px 40px;
     margin-bottom: 30px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+#stats-panel.hidden {
+    display: none !important;
+}
+
+.stat-line {
+    font-size: 1.4vw;
+    color: #ffffff;
+    font-weight: bold;
+    letter-spacing: 1px;
+}
+
+.stat-line span {
+    color: #00ffcc;
+    text-shadow: 0 0 5px #00ffcc;
 }
 
 #start-btn {
     background: transparent;
     color: #00ffcc;
     border: 2px solid #00ffcc;
-    padding: 1vw 2vw;
+    padding: 1vw 2.5vw;
     font-family: inherit;
-    font-size: 1.2vw;
+    font-size: 1.3vw;
     font-weight: bold;
     cursor: pointer;
     box-shadow: 0 0 10px rgba(0, 255, 204, 0.3);
