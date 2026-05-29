@@ -1,0 +1,109 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    user-select: none;
+}
+
+body {
+    background-color: #08080c;
+    color: #00ffcc;
+    font-family: 'Courier New', Courier, monospace;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    width: 100vw;
+}
+
+#game-container {
+    position: relative;
+    width: 1280px;
+    height: 720px;
+    box-shadow: 0 0 30px rgba(0, 255, 204, 0.2);
+    border: 2px solid #00ffcc;
+    background-color: #020205;
+}
+
+canvas {
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+
+/* HUD System Styles */
+#hud {
+    position: absolute;
+    top: 15px;
+    left: 15px;
+    right: 15px;
+    display: flex;
+    justify-content: space-between;
+    pointer-events: none;
+}
+
+.hud-stat {
+    background: rgba(2, 2, 5, 0.85);
+    padding: 8px 16px;
+    border: 1px solid #00ffcc;
+    font-weight: bold;
+    font-size: 16px;
+    text-shadow: 0 0 5px #00ffcc;
+    letter-spacing: 1px;
+}
+
+/* Screen Overlays (Start, Win, Game Over) */
+#screen-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(5, 5, 10, 0.95);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 10;
+    transition: opacity 0.3s ease;
+}
+
+#screen-overlay.hidden {
+    opacity: 0;
+    pointer-events: none;
+}
+
+#overlay-title {
+    font-size: 48px;
+    color: #ff0055;
+    text-shadow: 0 0 15px #ff0055;
+    margin-bottom: 10px;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+}
+
+#overlay-sub {
+    font-size: 16px;
+    color: #8899a6;
+    margin-bottom: 30px;
+}
+
+#start-btn {
+    background: transparent;
+    color: #00ffcc;
+    border: 2px solid #00ffcc;
+    padding: 12px 30px;
+    font-family: inherit;
+    font-size: 18px;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 0 10px rgba(0, 255, 204, 0.3);
+    transition: all 0.2s ease;
+}
+
+#start-btn:hover {
+    background: #00ffcc;
+    color: #020205;
+    box-shadow: 0 0 25px #00ffcc;
+}
