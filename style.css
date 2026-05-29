@@ -15,12 +15,17 @@ body {
     align-items: center;
     height: 100vh;
     width: 100vw;
+    padding: 20px; /* Gives a safe margin around the edges */
 }
 
 #game-container {
     position: relative;
-    width: 1280px;
-    height: 720px;
+    /* This makes it scale fluidly up to its original max dimensions */
+    width: 100%;
+    max-width: 1280px;
+    max-height: 720px;
+    /* Enforces a perfect widescreen aspect ratio regardless of screen size */
+    aspect-ratio: 16 / 9; 
     box-shadow: 0 0 30px rgba(0, 255, 204, 0.2);
     border: 2px solid #00ffcc;
     background-color: #020205;
@@ -45,10 +50,11 @@ canvas {
 
 .hud-stat {
     background: rgba(2, 2, 5, 0.85);
-    padding: 8px 16px;
+    padding: 6px 12px;
     border: 1px solid #00ffcc;
     font-weight: bold;
-    font-size: 16px;
+    font-size: 1.2vw; /* Dynamically sizes font based on the viewport width */
+    min-font-size: 12px;
     text-shadow: 0 0 5px #00ffcc;
     letter-spacing: 1px;
 }
@@ -75,7 +81,7 @@ canvas {
 }
 
 #overlay-title {
-    font-size: 48px;
+    font-size: 4vw; /* Scales header text to fit smaller display limits */
     color: #ff0055;
     text-shadow: 0 0 15px #ff0055;
     margin-bottom: 10px;
@@ -84,7 +90,7 @@ canvas {
 }
 
 #overlay-sub {
-    font-size: 16px;
+    font-size: 1.2vw;
     color: #8899a6;
     margin-bottom: 30px;
 }
@@ -93,9 +99,9 @@ canvas {
     background: transparent;
     color: #00ffcc;
     border: 2px solid #00ffcc;
-    padding: 12px 30px;
+    padding: 1vw 2vw;
     font-family: inherit;
-    font-size: 18px;
+    font-size: 1.2vw;
     font-weight: bold;
     cursor: pointer;
     box-shadow: 0 0 10px rgba(0, 255, 204, 0.3);
@@ -106,4 +112,5 @@ canvas {
     background: #00ffcc;
     color: #020205;
     box-shadow: 0 0 25px #00ffcc;
+}
 }
