@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DArk: Echo Sector</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="game-container">
+        <canvas id="gameCanvas" width="1280" height="720"></canvas>
+        
+        <div id="hud">
+            <div class="hud-stat">HEALTH: <span id="ui-health">100</span>%</div>
+            <div class="hud-stat">SCORE: <span id="ui-score">0</span></div>
+            <div class="hud-stat">ROOM: <span id="ui-room">1</span></div>
+            <div class="hud-stat">CURRENCY: $<span id="ui-currency">0</span></div>
+        </div>
+
+        <div id="screen-overlay" class="visible">
+            <h1 id="overlay-title">DArk: Echo Sector</h1>
+            <p id="overlay-sub">Survive the Rogue Combat Simulation</p>
+            <button id="start-btn" onclick="startGame()">INITIALIZE SYSTEM</button>
+        </div>
+    </div>
+
+    <script src="game.js"></script>
+</body>
+</html>
