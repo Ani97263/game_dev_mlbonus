@@ -1,17 +1,11 @@
-/**
- * DArk : Echo Sector - Bug Hardened Production Engine
- */
-
-// --- GLOBAL CONSTRAINTS & STATE ---
 let player_position_x = 200;
 let player_position_y = 200;
 
 const keys = {};
 
-// Projectile Doubly Linked List Definition
 class BulletNode {
     constructor(data) {
-        this.data = data; // {x, y, vx, vy, isEnemy, bounces, radius}
+        this.data = data; 
         this.next = null;
         this.prev = null;
     }
@@ -41,7 +35,6 @@ class BulletLinkedList {
     }
 }
 
-// Singleton Factory for Enemy Spawning with Garbage Collection
 const enemy_manager_singleton_controller_factory = {
     spawnPool: [],
     createEnemy(type, x, y) {
@@ -62,12 +55,10 @@ const enemy_manager_singleton_controller_factory = {
         return enemy;
     },
     clearAll() {
-        // Explicitly clear references to let garbage collector free memory
         this.spawnPool = [];
     }
 };
 
-// Global Central Monolith State
 const single_global_state_object = {
     gameActive: false,
     player: { hp: 100, maxHp: 100, score: 0, currency: 0, speed: 4, radius: 15 },
@@ -87,9 +78,7 @@ const single_global_state_object = {
     }
 };
 
-// --- PHYSICS ENGINE & SAT DETECTIONS ---
 
-// Separating Axis Theorem (SAT) Collision Logic
 function checkSATCollision(polyA, polyB) {
     const polys = [polyA, polyB];
     for (let i = 0; i < polys.length; i++) {
@@ -130,7 +119,6 @@ function createWallPolygon(x, y, w, h) {
     ];
 }
 
-// Upgraded to 16 sides to avoid corner-clipping flaws
 function getCircularEntityPolygon(cx, cy, r) {
     const sides = 16;
     const points = [];
@@ -161,10 +149,9 @@ function initRoom() {
     single_global_state_object.enemies = enemy_manager_singleton_controller_factory.spawnPool;
 }
 
-// --- CORE GAME LOOP ROUTINE ---
+// --- CORE ENGINE ENGINE LOOPS ---
 
 function render_entities_and_update_state(ctx) {
-    // 1. Player Key Inputs and Syncs
     let moveX = 0;
     let moveY = 0;
     if (keys['w'] || keys['ArrowUp']) moveY -= single_global_state_object.player.speed;
@@ -183,7 +170,6 @@ function render_entities_and_update_state(ctx) {
         if (single_global_state_object.walls.some(w => checkSATCollision(poly, w))) player_position_y -= moveY;
     }
 
-    // 2. Process Enemy Finite State Machines (AI Rules)
     const now = Date.now();
     single_global_state_object.enemies.forEach(enemy => {
         const dist = Math.hypot(player_position_x - enemy.x, player_position_y - enemy.y);
@@ -236,13 +222,13 @@ function render_entities_and_update_state(ctx) {
         }
     });
 
-    // 3. Bullet Updates via CCD Sub-Stepping to Prevent Tunneling
+    // 3. Bullet Updates via CCD Sub-Stepping
     let node = single_global_state_object.bullets.head;
     while (node !== null) {
         let nextNode = node.next;
         let b = node.data;
         
-        let subSteps = 4; // Sub-steps calculation split rule
+        let subSteps = 4;
         let stepVx = b.vx / subSteps;
         let stepVy = b.vy / subSteps;
         let bulletDestroyed = false;
@@ -263,7 +249,6 @@ function render_entities_and_update_state(ctx) {
 
             if (collidingWall) {
                 if (b.bounces < 2) {
-                    // Backstep to instantly clear boundary intersections
                     b.x -= stepVx * 1.5;
                     b.y -= stepVy * 1.5;
                     
@@ -280,14 +265,13 @@ function render_entities_and_update_state(ctx) {
                 }
             }
             
-            // Validate targeting matrices
             if (b.isEnemy) {
                 let pPoly = getCircularEntityPolygon(player_position_x, player_position_y, single_global_state_object.player.radius);
                 if (checkSATCollision(bulletPoly, pPoly)) {
                     single_global_state_object.player.hp -= 10;
                     single_global_state_object.bullets.remove(node);
                     bulletDestroyed = true;
-                    if (single_global_state_object.player.hp <= 0) endGame(false);
+                    if (single_global_state_object.player.hp <= 0) endGame(false); // if the player is dead -> lose the trigger
                     break;
                 }
             } else {
@@ -309,7 +293,12 @@ function render_entities_and_update_state(ctx) {
                         single_global_state_object.enemies.splice(hitEnemyIndex, 1);
                         single_global_state_object.player.score += 100;
                         single_global_state_object.player.currency += 20;
-                        checkRoomClear();
+                    
+                        if (single_global_state_object.enemies.length === 0 && single_global_state_object.currentRoom >= 3) {
+                            endGame(true);
+                        } else {
+                            checkRoomClear();
+                        }
                     }
                     break;
                 }
@@ -323,10 +312,8 @@ function render_entities_and_update_state(ctx) {
         node = nextNode;
     }
 
-    // 4. Trace Processing
     single_global_state_object.save_game_state_every_frame();
 
-    // 5. Draw Canvas Layers
     ctx.fillStyle = '#020205';
     ctx.fillRect(0, 0, 1280, 720);
 
@@ -357,7 +344,7 @@ function render_entities_and_update_state(ctx) {
 
     node = single_global_state_object.bullets.head;
     while (node !== null) {
-        ctx.fillStyle = node.data.isEnemy ? '#ff0055' : '#00ffcc';
+        ctx.fillStyle = node.data.isEnemy ? '#ff0055' : '#b39ddb'; // Player bullets use soft lavender tint
         ctx.shadowBlur = 8;
         ctx.shadowColor = ctx.fillStyle;
         ctx.beginPath();
@@ -367,9 +354,10 @@ function render_entities_and_update_state(ctx) {
         node = node.next;
     }
 
-    ctx.fillStyle = '#00ffcc';
-    ctx.shadowBlur = 12;
-    ctx.shadowColor = '#00ffcc';
+    // --- MODIFIED PLAYER ENTITY LAYER: LAVENDER/PURPLE SCHEME ---
+    ctx.fillStyle = '#b39ddb'; // Primary Soft Lavender Core Fill
+    ctx.shadowBlur = 15;
+    ctx.shadowColor = '#7e57c2'; // Deep Purple Neon Shadow Base Accent
     ctx.beginPath();
     ctx.arc(player_position_x, player_position_y, single_global_state_object.player.radius, 0, Math.PI * 2);
     ctx.fill();
@@ -390,7 +378,6 @@ function main_game_loop() {
     requestAnimationFrame(main_game_loop);
 }
 
-// --- INTERACTIVE EVENT MANAGEMENT ---
 
 window.addEventListener('keydown', e => { keys[e.key] = true; });
 window.addEventListener('keyup', e => { keys[e.key] = false; });
@@ -401,7 +388,6 @@ window.addEventListener('mousedown', e => {
     const canvas = document.getElementById('gameCanvas');
     const rect = canvas.getBoundingClientRect();
     
-    // Clean mouse coordinate decoding unaffected by container dynamic scaling
     const mouseX = (e.clientX - rect.left) * (canvas.width / rect.width);
     const mouseY = (e.clientY - rect.top) * (canvas.height / rect.height);
     
@@ -422,13 +408,15 @@ function checkRoomClear() {
     if (single_global_state_object.enemies.length === 0) {
         single_global_state_object.currentRoom++;
         single_global_state_object.player.score += 500;
-        enemy_manager_singleton_controller_factory.clearAll(); // Flush memory leaks cleanly
+        enemy_manager_singleton_controller_factory.clearAll(); 
         initRoom(); 
     }
 }
 
 function startGame() {
     document.getElementById('screen-overlay').classList.add('hidden');
+    document.getElementById('stats-panel').classList.add('hidden'); // hide metrics container
+    
     single_global_state_object.gameActive = true;
     single_global_state_object.player.hp = 100;
     single_global_state_object.player.score = 0;
@@ -444,16 +432,31 @@ function startGame() {
 
 function endGame(victory = false) {
     single_global_state_object.gameActive = false;
+    
     const overlay = document.getElementById('screen-overlay');
     const title = document.getElementById('overlay-title');
     const sub = document.getElementById('overlay-sub');
     const btn = document.getElementById('start-btn');
+    const statsPanel = document.getElementById('stats-panel');
     
-    title.innerText = victory ? "SECTOR PURGED" : "SYSTEM CRASH";
-    title.style.color = victory ? "#00ffcc" : "#ff0055";
-    title.style.textShadow = victory ? "0 0 15px #00ffcc" : "0 0 15px #ff0055";
-    sub.innerText = `Final Score achieved: ${single_global_state_object.player.score} across ${single_global_state_object.currentRoom} simulation sectors.`;
-    btn.innerText = "REBOOT MATRIX";
+    if (victory) {
+        title.innerText = "SIMULATION COMPLETE";
+        title.style.color = "#00ffcc";
+        title.style.textShadow = "0 0 15px #00ffcc";
+        sub.innerText = "Excellent performance. All hostile rogue combat clusters in this sector have been successfully eliminated.";
+        btn.innerText = "RUN SIMULATION AGAIN";
+    } else {
+        title.innerText = "SYSTEM CRASH";
+        title.style.color = "#ff0055";
+        title.style.textShadow = "0 0 15px #ff0055";
+        sub.innerText = "Biometric signal terminated. Your organic shell failed to withstand the sector's defensive grid.";
+        btn.innerText = "REBOOT SYSTEM MATRIX";
+    }
     
+    document.getElementById('stat-rooms').innerText = single_global_state_object.currentRoom - 1;
+    document.getElementById('stat-score').innerText = single_global_state_object.player.score;
+    document.getElementById('stat-bounty').innerText = single_global_state_object.player.currency;
+    
+    statsPanel.classList.remove('hidden');
     overlay.classList.remove('hidden');
 }
